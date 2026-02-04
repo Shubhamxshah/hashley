@@ -15,9 +15,10 @@ export default function Home() {
       apiKey={process.env.NEXT_PUBLIC_TAMBO_API_KEY!}
       components={components}
       tools={tools}
+      mcpServers={mcpServers}
       tamboUrl={process.env.NEXT_PUBLIC_TAMBO_URL}
     >
-      <TamboMcpProvider mcpServers={mcpServers}>
+      <TamboMcpProvider>
         <div className="h-screen">
           <MessageThreadFull contextKey="tambo-template" />
         </div>

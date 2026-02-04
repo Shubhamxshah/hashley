@@ -8,8 +8,17 @@ import {
 import * as React from "react";
 import { useMemo, useState } from "react";
 
-type FieldSchema =
-  TamboElicitationRequest["requestedSchema"]["properties"][string];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FieldSchema = Record<string, any>;
+
+interface ElicitationSchema {
+  properties: Record<string, FieldSchema>;
+  required?: string[];
+}
+
+function getSchema(request: TamboElicitationRequest): ElicitationSchema {
+  return request.requestedSchema as ElicitationSchema;
+}
 
 /**
  * Props for individual field components
@@ -88,8 +97,8 @@ const EnumField: React.FC<FieldProps> = ({
   if (schema.type !== "string" || !("enum" in schema)) {
     return null;
   }
-  const options = schema.enum ?? [];
-  const optionNames =
+  const options: string[] = schema.enum ?? [];
+  const optionNames: string[] =
     "enumNames" in schema ? (schema.enumNames ?? []) : options;
   const stringValue = value as string | undefined;
 
@@ -287,7 +296,7 @@ const Field: React.FC<FieldProps> = (props) => {
  * (one field that is boolean or enum)
  */
 function isSingleEntryMode(request: TamboElicitationRequest): boolean {
-  const fields = Object.entries(request.requestedSchema.properties);
+  const fields = Object.entries(getSchema(request).properties);
 
   if (fields.length !== 1) {
     return false;
@@ -447,13 +456,14 @@ export const ElicitationUI: React.FC<ElicitationUIProps> = ({
   className,
 }) => {
   const singleEntry = isSingleEntryMode(request);
+  const schema = getSchema(request);
   const fields = useMemo(
-    () => Object.entries(request.requestedSchema.properties),
-    [request.requestedSchema.properties],
+    () => Object.entries(schema.properties),
+    [schema.properties],
   );
   const requiredFields = useMemo(
-    () => request.requestedSchema.required ?? [],
-    [request.requestedSchema.required],
+    () => schema.required ?? [],
+    [schema.required],
   );
   const [formData, setFormData] = useState<Record<string, unknown>>(() => {
     const initial: Record<string, unknown> = {};

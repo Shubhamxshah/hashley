@@ -9,7 +9,12 @@
  */
 
 import { Graph, graphSchema } from "@/components/tambo/graph";
+import {
+  XPostPreview,
+  xPostPreviewSchema,
+} from "@/components/tambo/x-post-preview";
 import { DataCard, dataCardSchema } from "@/components/ui/card-data";
+import { generateImage } from "@/services/image-generation";
 import {
   getCountryPopulations,
   getGlobalPopulationTrend,
@@ -89,6 +94,29 @@ export const tools: TamboTool[] = [
         ),
       ),
   },
+  {
+    name: "generateImage",
+    description:
+      "Generates an image from a text prompt using Pollinations.ai. Returns an image URL that can be used in the XPostPreview component.",
+    tool: generateImage,
+    toolSchema: z
+      .function()
+      .args(
+        z.object({
+          prompt: z
+            .string()
+            .describe("Detailed text description of the image to generate"),
+          width: z.number().optional().describe("Image width in pixels"),
+          height: z.number().optional().describe("Image height in pixels"),
+        })
+      )
+      .returns(
+        z.object({
+          imageUrl: z.string(),
+          prompt: z.string(),
+        })
+      ),
+  },
   // Add more tools here
 ];
 
@@ -113,6 +141,13 @@ export const components: TamboComponent[] = [
       "A component that displays options as clickable cards with links and summaries with the ability to select multiple items.",
     component: DataCard,
     propsSchema: dataCardSchema,
+  },
+  {
+    name: "XPostPreview",
+    description:
+      "Renders a realistic Twitter/X post preview with an AI-generated image and caption. Includes approve/reject buttons to post directly to the user's connected Twitter account. Use this after generating an image with the generateImage tool. Pass the user's displayName, username, and profileImageUrl from their connected Twitter account.",
+    component: XPostPreview,
+    propsSchema: xPostPreviewSchema,
   },
   // Add more components here
 ];
