@@ -42,6 +42,13 @@ interface PostState {
   errorMessage?: string;
 }
 
+interface TwitterUser {
+  id: string;
+  name: string;
+  username: string;
+  profile_image_url?: string;
+}
+
 export const XPostPreview = React.forwardRef<HTMLDivElement, XPostPreviewProps>(
   (
     {
@@ -49,19 +56,39 @@ export const XPostPreview = React.forwardRef<HTMLDivElement, XPostPreviewProps>(
       caption,
       displayName: displayNameProp,
       username: usernameProp,
-      profileImageUrl,
+      profileImageUrl: profileImageUrlProp,
       verified: verifiedProp,
     },
     ref
   ) => {
-    const displayName = displayNameProp || "User";
-    const username = usernameProp || "user";
-    const verified = verifiedProp ?? false;
+    const [twitterUser, setTwitterUser] = React.useState<TwitterUser | null>(null);
     const [state, setState] = useTamboComponentState<PostState>(
       "x-post-preview",
       { status: "pending" }
     );
     const [imageLoaded, setImageLoaded] = React.useState(false);
+
+    // Fetch connected Twitter user data on mount
+    React.useEffect(() => {
+      const fetchTwitterUser = async () => {
+        try {
+          const res = await fetch("/api/twitter/me");
+          const data = await res.json();
+          if (data.connected && data.user) {
+            setTwitterUser(data.user);
+          }
+        } catch {
+          // Silently fail - will use fallback values
+        }
+      };
+      fetchTwitterUser();
+    }, []);
+
+    // Use props if provided, otherwise use fetched Twitter user data, otherwise fallback
+    const displayName = displayNameProp || twitterUser?.name || "User";
+    const username = usernameProp || twitterUser?.username || "user";
+    const profileImageUrl = profileImageUrlProp || twitterUser?.profile_image_url;
+    const verified = verifiedProp ?? false;
 
     const handleApprove = async () => {
       setState({ status: "posting" });
