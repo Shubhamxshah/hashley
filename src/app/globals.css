@@ -148,6 +148,19 @@ Animated gradient for thinking text, creates a shimmering effect that moves acro
   }
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
 .animate-thinking-gradient {
   /* Fallback */
   background: linear-gradient(90deg, #666 0%, #bbb 50%, #666 100%);
