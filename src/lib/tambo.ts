@@ -10,6 +10,10 @@
 
 import { Graph, graphSchema } from "@/components/tambo/graph";
 import {
+  IGPostPreview,
+  igPostPreviewSchema,
+} from "@/components/tambo/ig-post-preview";
+import {
   XPostPreview,
   xPostPreviewSchema,
 } from "@/components/tambo/x-post-preview";
@@ -97,7 +101,7 @@ export const tools: TamboTool[] = [
   {
     name: "generateImage",
     description:
-      "Generates an image from a text prompt using Pollinations.ai. Returns an image URL that can be used in the XPostPreview component.",
+      "Generates an image from a text prompt using Pollinations.ai. Returns an image URL that can be used in the XPostPreview or IGPostPreview components.",
     tool: generateImage,
     toolSchema: z
       .function()
@@ -148,6 +152,13 @@ export const components: TamboComponent[] = [
       "Renders a realistic Twitter/X post preview with an AI-generated image and caption. Includes approve/reject buttons to post directly to the user's connected Twitter account. Use this after generating an image with the generateImage tool. Pass the user's displayName, username, and profileImageUrl from their connected Twitter account.",
     component: XPostPreview,
     propsSchema: xPostPreviewSchema,
+  },
+  {
+    name: "IGPostPreview",
+    description:
+      "Renders a realistic Instagram post preview with an AI-generated image and caption. Includes approve/reject buttons to post directly to the user's connected Instagram account. Use this after generating an image with the generateImage tool. Pass the user's displayName, username, and profileImageUrl from their connected Instagram account.",
+    component: IGPostPreview,
+    propsSchema: igPostPreviewSchema,
   },
   // Add more components here
 ];
